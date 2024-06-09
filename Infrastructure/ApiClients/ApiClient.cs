@@ -1,4 +1,6 @@
 ﻿using Core.Abstraction;
+using Core.Response;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -15,29 +17,31 @@ namespace Infrastructure.ApiClients
         {
             _httpClient = httpClient;
         }
-        public async Task<string> GetDataAsync(string endpoint, string jwtToken)
+        public async Task<ApiResponse<TResponse>> GetDataAsync<TResponse>(string endpoint, string? jwtToken = null)
         {
-            _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", jwtToken);
+            if (jwtToken != null)
+                _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", jwtToken);
 
             var response = await _httpClient.GetAsync($"api/{endpoint}");
-            response.EnsureSuccessStatusCode();
-            return await response.Content.ReadAsStringAsync();
+            var jsonResponse = await response.Content.ReadAsStringAsync();
+            return JsonConvert.DeserializeObject<ApiResponse<TResponse>>(jsonResponse);
         }
-        public async Task<string> PostDataAsync(object data, string endpoint, string jwtToken)
+
+        public async Task<ApiResponse<TResponse>> PostDataAsync<TResponse>(object data, string endpoint, string? jwtToken = null)
         {
             var content = new StringContent(
-                content : Newtonsoft.Json.JsonConvert.SerializeObject(data),
+                content: Newtonsoft.Json.JsonConvert.SerializeObject(data),
                 Encoding.UTF8,
-                "application/json"
-            );
+                "application/json");
 
-            _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", jwtToken);
+            if (jwtToken != null)
+                _httpClient.DefaultRequestHeaders.Authorization = 
+                    new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", jwtToken);
 
             var response = await _httpClient.PostAsync($"api/{endpoint}", content);
+            var jsonResponse = await response.Content.ReadAsStringAsync();
 
-            response.EnsureSuccessStatusCode();
-
-            return await response.Content.ReadAsStringAsync();
+            return JsonConvert.DeserializeObject<ApiResponse<TResponse>>(jsonResponse);
         }
     }
 }

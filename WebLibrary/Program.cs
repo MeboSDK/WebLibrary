@@ -1,11 +1,13 @@
 using Infrastructure;
+using Application;
+using WebLibrary.Middlewares;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
-builder.Services.AddInfrastructure();
+builder.Services.AddInfrastructure().AddApplication();
 
 var app = builder.Build();
 
@@ -20,7 +22,12 @@ if (!app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 
+app.UseMiddleware<TokenUnprotectMiddleware>();
+app.UseMiddleware<JwtAuthenticationMiddleware>();
+
 app.UseRouting();
+
+app.UseAuthentication();
 
 app.UseAuthorization();
 

@@ -11,7 +11,6 @@ public static class DependencyInjection
     public static IServiceCollection AddInfrastructure(this IServiceCollection services)
     {
         services.AddDataProtection();
-
         services.AddHttpClient<IApiClient, ApiClient>(client =>
         {
             client.BaseAddress = new Uri("https://localhost:44391/");

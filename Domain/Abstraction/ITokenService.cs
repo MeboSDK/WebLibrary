@@ -2,7 +2,7 @@
 {
     public interface ITokenService
     {
-        string Protect(string token);
-        string Unprotect(string protectedToken);
+        string ProtectToken(string token);
+        string UnprotectToken(string protectedToken);
     }
 }

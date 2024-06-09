@@ -11,12 +11,12 @@ public class TokenService : ITokenService
     {
         _protector = dataProtectionProvider.CreateProtector("jwtTokenProtection");
     }
-    public string Protect(string token)
+    public string ProtectToken(string token)
     {
         return _protector.Protect(token);
     }
 
-    public string Unprotect(string protectedToken)
+    public string UnprotectToken(string protectedToken)
     {
         return _protector.Unprotect(protectedToken);
     }
